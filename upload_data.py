@@ -57,12 +57,12 @@ def upload_data_page():
 
             if st.button("Use Original Data", key="use_original_data_button"):
                 st.session_state[f'selected_data_{dataset_type}'] = 'original'
-                st.experimental_rerun()
+                st.rerun()
 
             if f'{dataset_type}_augmented_data' in st.session_state:
                 if st.button("Use Augmented Data", key="use_augmented_data_button"):
                     st.session_state[f'selected_data_{dataset_type}'] = 'augmented'
-                    st.experimental_rerun()
+                    st.rerun()
             
         except Exception as e:
             st.error("An error occurred. Please try again.")
