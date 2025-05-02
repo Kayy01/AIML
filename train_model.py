@@ -50,11 +50,21 @@ def transform_nh_data(data):
     df = data.fillna(method='ffill').fillna(method='bfill')
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(inplace=True)
-    X = df.drop(['Is_Good'], axis=1)
-    y = df['Is_Good']
+
+    # Check if 'Is_Good' exists before trying to drop it
+    if 'Is_Good' in df.columns:
+        X = df.drop(['Is_Good'], axis=1)
+        y = df['Is_Good']
+    else:
+        st.warning("Column 'Is_Good' not found in the dataset.")
+        X = df  # Use the entire dataset as features if 'Is_Good' is missing
+        y = None  # No target variable
+
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
+
     X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
     return X_train, X_test, y_train, y_test, scaler
 
 # Update the train_model_page function
@@ -75,6 +85,10 @@ def train_model_page():
             X_train, X_test, y_train, y_test, scaler = transform_sh_data(data)
         elif dataset_type == "NH":
             X_train, X_test, y_train, y_test, scaler = transform_nh_data(data)
+
+            if y_train is None:  # Handle the case where no target is available
+                st.error("No target variable found. Cannot train the model.")
+                return
 
         y_train_enc = tf.keras.utils.to_categorical(y_train)
         y_test_enc = tf.keras.utils.to_categorical(y_test)
@@ -115,4 +129,5 @@ def train_model_page():
             st.write(f"The scaler has been saved as {scaler_file_name}")
     else:
         st.write("Please upload and select a dataset first on the 'Upload Data' page.")
+
 
