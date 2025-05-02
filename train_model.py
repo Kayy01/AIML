@@ -39,11 +39,25 @@ def create_rnn_model(input_shape):
 def transform_sh_data(data):
     data_numeric = data.select_dtypes(include=['number'])
     data_numeric = data_numeric.fillna(data_numeric.median())
-    X = data_numeric.drop('Is_True', axis=1)
-    y = data_numeric['Is_True']
+
+    # Handle missing 'Is_True' column
+    if 'Is_True' in data_numeric.columns:
+        X = data_numeric.drop('Is_True', axis=1)
+        y = data_numeric['Is_True']
+    else:
+        st.warning("'Is_True' column not found. Using all columns for X and setting y to None.")
+        X = data_numeric
+        y = None
+
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
+
+    if y is not None:
+        X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=42)
+    else:
+        # If y is None (i.e. no labels), return only scaled X and scaler
+        return X_scaled, None, None, None, scaler
+
     return X_train, X_test, y_train, y_test, scaler
 
 def transform_nh_data(data):
