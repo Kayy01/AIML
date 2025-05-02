@@ -5,6 +5,9 @@ from prediction import prediction_page
 from utils import apply_custom_css
 from train_model import train_model_page
 
+# Set page config as the very first command
+st.set_page_config(page_title="AIML Prediction", layout="wide", page_icon="https://iportal.ncheo.com/images/logo-Icon1.png")
+
 def main():
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Upload Data", "Model Parameters", "Train Model", "Prediction"], key="main_navigation")
