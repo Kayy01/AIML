@@ -15,7 +15,14 @@ def transform_nh_data(data):
     df = data.fillna(method='ffill').fillna(method='bfill')
     df.replace([np.inf, -np.inf], np.nan, inplace=True)
     df.dropna(inplace=True)
-    X = df.drop(['Is_Good'], axis=1)
+
+    # Drop 'Is_Good' if it exists
+    if 'Is_Good' in df.columns:
+        X = df.drop(['Is_Good'], axis=1)
+    else:
+        X = df  # or raise a custom warning
+        st.warning("'Is_Good' column not found. Proceeding without dropping it.")
+
     return X
 
 def load_model(model_type, dataset_type):
