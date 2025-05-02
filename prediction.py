@@ -8,7 +8,14 @@ import pickle
 def transform_sh_data(data):
     data_numeric = data.select_dtypes(include=['number'])
     data_numeric = data_numeric.fillna(data_numeric.median())
-    X = data_numeric.drop('Is_True', axis=1)
+
+    # Drop 'Is_True' if it exists
+    if 'Is_True' in data_numeric.columns:
+        X = data_numeric.drop('Is_True', axis=1)
+    else:
+        X = data_numeric
+        st.warning("'Is_True' column not found. Proceeding without dropping it.")
+
     return X
 
 def transform_nh_data(data):
